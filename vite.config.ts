@@ -8,12 +8,15 @@ import { resolve } from 'node:path'
 export default defineConfig({
   build: {
     lib: {
-      entry: resolve(__dirname, 'lib/vue-plugin-template.ts'),
-      name: 'LibName',
-      formats: ['es', 'umd']
+      entry: {
+        'vuetify-filterable': resolve(__dirname, 'lib/vuetify-filterable.ts'),
+        'composeables/useFilters': resolve(__dirname, 'lib/composeables/useFilters.ts')
+      },
+      name: 'vuetify-filterable',
+      formats: ['es']
     },
     rollupOptions: {
-      external: ['vue'],
+      external: ['vue', 'vuetify', '@mdi/font'],
       output: {
         globals: {
           vue: 'Vue'

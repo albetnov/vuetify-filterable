@@ -1,31 +1,104 @@
-# Vue Plugin Template
+# Vuetify Filterable
 
-This template is tailored to simplify the process of creating plugins for Vue.js, complete with TypeScript integration, Eslint and Prettier for consistent code quality, and Vitest configuration for seamless testing.
+Vuetify Filterable is a package that renders rich and flexible filters for your application's requirements.
 
-# Configuring
+> It's simply a view component.
 
-You can configure the project to change its name and contents using the CLI:
+# Quick Usage
+
+First, install it:
 
 ```bash
-node ./configure.cjs
+pnpm i vuetify-filterable
 ```
 
-Follow the instructions, and everything should be set.
+Then, plug it in:
 
-# Directory Structure
+```typescript
+import { createApp } from 'vue'
+import App from './App.vue'
+import VuetifyFilterable from 'vuetify-filterable'
+import 'vuetify/styles'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+import { createVuetify } from 'vuetify'
+import { VDatePicker } from 'vuetify/labs/VDatePicker'
+import '@mdi/font/css/materialdesignicons.css'
 
-- `__tests__` <br/> all your test files should placed here
-- `lib` <br /> Your plugin source code to be bundled
-- `src` <br /> Basically, your playground
+const vuetify = createVuetify({
+  components: {
+    ...components,
+    VDatePicker
+  },
+  directives
+})
 
-## Removing unnecessary folders or file from git
+createApp(App).use(vuetify).use(VuetifyFilterable).mount('#app')
+```
 
-For instance, consider the src directory, which should be excluded from Git. To do this, ensure the deletion of the src folder in the remote repository, followed by the clearing of your local Git cache. Consequently, any additions or removals within the src folder will not activate Git actions.
+Call it on your template:
 
-Here are step-by-step instructions you can follow:
+```vue
+<script setup lang="ts">
+import useFilters, { type Filter } from 'vuetify-filterable/composeables/useFilters'
 
-- Uncomment the src line in the .gitignore file.
-- Execute: git rm -r --cached src
-- Commit the changes and push to the remote branch.
+// use Filter[] types to unlock auto complete
+const filters: Filter[] = [
+    {
+        label: "Text Label",
+        uid: "unique_id_for_identify_filter",
+        type: "select" // use the autocomplete to see available types,
+        value: [
+            {label: "Another Label for select", value: "value_for_select"}
+        ]
+    }
+]
 
-The same approach can be applied to other files that aren't typically committed to remote repositories, like public and index.html. If these files are already listed in your .gitignore, simply uncomment the relevant lines.
+const { appendFilter, state } = useFilters(filters)
+appendFilter(0) // index of the filters array.
+</script>
+
+<template>
+  <v-filterable v-model="state.values" :filters="state.selectedFilter" />
+</template>
+```
+
+> The `value` key is only required when the type is 'select' or 'select-multiple'.
+
+# API Reference
+
+## `v-filterable` Component
+
+- Props
+
+  - filters <br />
+    An array of `Filter[]` to be rendered.
+  - modelValue <br />
+    Represents the filter's value. It contains `filter.uid` as keys and an object with `opr` and `val` as the value.
+
+- Events
+  - update:modelValue($event) <br />
+    Triggered when a value is being updated. It emits a new object with updated values.
+  - updating(id, val, opr) <br />
+    Triggered when a value is being updated. Unlike the previous event, this one only emits a single updated value rather than an object with updated values.
+
+## `useFilters` Composable
+
+- Props
+
+  - filters <br />
+    An array of `Filter[]` to be managed.
+
+- Return Value
+
+  - appendFilter(i: number) <br />
+    Adds a new filter to `state.selectedFilter[]`.
+
+  - removeFilter(i: number) <br />
+    Removes a filter from `state.selectedFilter[]`.
+
+  - removeValue(k: string) <br />
+    Removes filter values from `state.values`.
+
+  - toQueryString(p: string) <br />
+    Returns a URL with the appended query string of `state.values` to the provided parameter `p`.
