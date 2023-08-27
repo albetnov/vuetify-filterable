@@ -1,6 +1,6 @@
 {
   "name": "vuetify-filterable",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": false,
   "author": {
     "email": "ryxinfrvr@gmail.com",
@@ -14,7 +14,9 @@
     "url": "https://github.com/albetnov/vuetify-filterable"
   },
   "keywords": [
-    "vuetify-filterable"
+    "vuetify",
+    "filter",
+    "inputs-fields"
   ],
   "files": [
     "dist"

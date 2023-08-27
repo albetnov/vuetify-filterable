@@ -1,36 +1,23 @@
 <script setup lang="ts">
-import useFilterField from '../../composeables/useFilterField'
-import { toRef } from 'vue'
-import NumberOperator from './NumberOperator.vue'
+import type { FilterValue } from '../../composeables/useFilters'
+import useNumberModel from './useNumberModel'
+import Operator from '../Operator.vue'
 
 defineOptions({
   inheritAttrs: false
 })
 
 const props = defineProps<{
-  modelValue: {
-    opr: string
-    val: number
-  }
+  modelValue: FilterValue
+  label: string
 }>()
 
-const emits = defineEmits<{
-  'update:modelValue': [val: unknown]
-}>()
-
-const { onOperatorUpdate, onValueUpdate } = useFilterField(emits, toRef(props, 'modelValue'))
+const { value, operators } = useNumberModel(props, 'eq')
 </script>
 
 <template>
-  <v-col :cols="2">
-    <NumberOperator :model-value="props.modelValue.opr" @update:model-value="onOperatorUpdate" />
-  </v-col>
+  <Operator :items="operators" v-model="value.opr" />
   <v-col>
-    <v-text-field
-      v-bind="$attrs"
-      :model-value="props.modelValue.val"
-      @update:model-value="onValueUpdate($event, 'number')"
-      type="number"
-    ></v-text-field>
+    <v-text-field :label="props.label" v-model="value.val" type="number"></v-text-field>
   </v-col>
 </template>

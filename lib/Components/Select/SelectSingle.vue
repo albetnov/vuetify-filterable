@@ -1,38 +1,28 @@
 <script setup lang="ts">
-import useFilterField from '../../composeables/useFilterField'
-import SingleSelectOperator from './SingleSelectOperator.vue'
-import { toRef } from 'vue'
+import type { FilterValue, Entry } from 'lib/composeables/useFilters'
+import Operator from '../Operator.vue'
+import useSelectSingleModel from './useSelectSingleModel'
 
 defineOptions({
   inheritAttrs: false
 })
 
 const props = defineProps<{
-  modelValue: {
-    opr: string
-    val: string
-  }
+  modelValue: FilterValue
+  label: string
+  items: Entry[]
 }>()
 
-const emits = defineEmits<{
-  'update:modelValue': [val: unknown]
-}>()
-
-const { onOperatorUpdate, onValueUpdate } = useFilterField(emits, toRef(props, 'modelValue'))
+const { value, operators } = useSelectSingleModel(props, 'eq')
 </script>
 
 <template>
-  <v-col :sm="2" :xl="1">
-    <SingleSelectOperator
-      :model-value="props.modelValue.opr"
-      @update:model-value="onOperatorUpdate"
-    />
-  </v-col>
+  <Operator :items="operators" v-model="value.opr" />
   <v-col>
     <v-select
-      v-bind="$attrs"
-      :model-value="props.modelValue.val"
-      @update:model-value="onValueUpdate"
+      v-model="value.val"
+      :label="props.label"
+      :items="props.items"
       item-title="label"
       item-value="val"
     ></v-select>

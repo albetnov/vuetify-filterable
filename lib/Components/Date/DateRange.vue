@@ -1,39 +1,23 @@
 <script setup lang="ts">
-import { ref, toRef } from 'vue'
-import useFilterField from '../../composeables/useFilterField'
-import DateRangeOperator from './DateRangeOperator.vue'
+import useDateRangeModel from './useDateRangeModel'
+import type { FilterValue } from '../../composeables/useFilters'
+import Operator from '../Operator.vue'
 
 const props = defineProps<{
-  modelValue: {
-    opr: string
-    val: string
-  }
+  modelValue: FilterValue
   label: string
 }>()
 
-const emits = defineEmits<{
-  'update:modelValue': [val: unknown]
-}>()
-
-const { onOperatorUpdate, onValueUpdate } = useFilterField(emits, toRef(props, 'modelValue'))
-
-const isMenuOpen = ref(false)
-
-const handleOnSave = () => {
-  isMenuOpen.value = false
-}
+const { handleOnSave, isMenuOpen, operators, value } = useDateRangeModel(props, 'in')
 </script>
 
 <template>
-  <v-col :cols="2">
-    <DateRangeOperator :model-value="props.modelValue.opr" @update:model-value="onOperatorUpdate" />
-  </v-col>
+  <Operator :items="operators" v-model="value.opr" />
   <v-col>
     <v-menu :close-on-content-click="false" v-model="isMenuOpen">
       <template #activator="{ props: activatorProps }">
         <v-text-field
-          :model-value="props.modelValue.val"
-          @update:model-value="onValueUpdate($event, 'array')"
+          v-model="value.val"
           v-bind="activatorProps"
           placeholder="mm/dd/yy"
           :label="props.label"
@@ -41,8 +25,7 @@ const handleOnSave = () => {
       </template>
       <v-input>
         <v-date-picker
-          :model-value="props.modelValue.val"
-          @update:model-value="onValueUpdate($event, 'array')"
+          v-model="value.val"
           @click:save="handleOnSave"
           format="keyboardDate"
           multiple

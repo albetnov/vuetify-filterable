@@ -1,68 +1,100 @@
 import { provide, reactive } from 'vue'
 
+export interface Entry {
+  label: string
+  val: string
+}
+
 export interface Filter {
   label: string
-  uid: string
-  value?: { label: string; val: unknown }[]
+  field: string
   type: 'select' | 'select-multiple' | 'date' | 'date-range' | 'string' | 'number' | 'range'
+  entries?: Entry[]
+}
+
+export interface FilterValue {
+  field: string
+  opr: string | null
+  val: string | null
 }
 
 export type RemoveFilterFn = (index: number) => void
 export type RemoveValueFn = (id: string) => void
 
 export const REMOVE_FILTER = Symbol('removeFilter')
-export const REMOVE_VALUE = Symbol('removeValue')
 
 export default function useFilters(filters: Filter[]) {
   const state = reactive<{
     selectedFilter: Filter[]
     filters: Filter[]
-    values: Record<string, any>
+    values: FilterValue[]
   }>({
     selectedFilter: [],
     filters: filters,
-    values: {}
+    values: []
   })
 
   const appendFilter = (index: number) => {
     state.selectedFilter.push(filters[index])
+    state.values.push({ field: filters[index].field, opr: '', val: null })
     state.filters.splice(index, 1)
   }
 
   const removeFilter: RemoveFilterFn = (index: number) => {
     state.filters.push(state.selectedFilter[index])
     state.selectedFilter.splice(index, 1)
-  }
-
-  const removeValue: RemoveValueFn = (id: string) => {
-    if (id in state.values) {
-      delete state.values[id]
-    }
+    state.values.splice(index, 1)
   }
 
   provide(REMOVE_FILTER, removeFilter)
-  provide(REMOVE_VALUE, removeValue)
 
-  const toQueryString = (path: string) => {
+  const toQueryString = (path?: string) => {
     const query = new URLSearchParams()
 
-    for (const [key, value] of Object.entries(state.values)) {
-      query.append(`filter[operator][${key}]`, value.opr)
-      query.append(`filter[value][${key}]`, value.val)
+    for (const [index, filter] of Object.entries(state.values)) {
+      // if the value|operator is empty, it's mean the filter is not yet initialized or used, that's said we can just skip it.
+      if (!filter.val || !filter.opr) continue
+
+      query.append(`filters[${index}][field]`, filter.field)
+      query.append(`filters[${index}][operator]`, filter.opr)
+      query.append(`filters[${index}][value]`, filter.val)
     }
 
-    if (path[path.length - 1] != '/') {
-      path += '/'
+    if (path) {
+      if (path[path.length - 1] != '/') {
+        path += '/'
+      }
+
+      return `${path}?${query.toString()}`
     }
 
-    return `${path}?${query.toString()}`
+    return query.toString()
+  }
+
+  const toQueryObject = () => {
+    const result: { filters: { field: string; operator: string; value: string }[] } = {
+      filters: []
+    }
+
+    for (const filter of state.values) {
+      // if the value|operator is empty, it's mean the filter is not yet initialized or used, that's said we can just skip it.
+      if (!filter.val || !filter.opr) continue
+
+      result.filters.push({
+        field: filter.field,
+        operator: filter.opr,
+        value: filter.val
+      })
+    }
+
+    return result
   }
 
   return {
     state,
     appendFilter,
     removeFilter,
-    removeValue,
-    toQueryString
+    toQueryString,
+    toQueryObject
   }
 }

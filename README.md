@@ -12,7 +12,7 @@ First, install it:
 pnpm i vuetify-filterable
 ```
 
-Then, plug it in:
+Then, plug it in (Basic Installation Example):
 
 ```typescript
 import { createApp } from 'vue'
@@ -41,21 +41,26 @@ Call it on your template:
 ```vue
 <script setup lang="ts">
 import useFilters, { type Filter } from 'vuetify-filterable/composeables/useFilters'
+import { onMounted } from 'vue'
 
 // use Filter[] types to unlock auto complete
 const filters: Filter[] = [
     {
-        label: "Text Label",
-        uid: "unique_id_for_identify_filter",
+        label: "Roles",
+        field: "role",
         type: "select" // use the autocomplete to see available types,
-        value: [
-            {label: "Another Label for select", value: "value_for_select"}
+        entries: [ // only required if type is `select` or `select-multiple`.
+            {label: "Super Admin", value: "super_admin"},
+            {label: "User", value: "user"}
         ]
     }
 ]
 
 const { appendFilter, state } = useFilters(filters)
-appendFilter(0) // index of the filters array.
+
+onMounted(() => {
+  appendFilter(0) // index of the filters array.
+})
 </script>
 
 <template>
@@ -63,7 +68,13 @@ appendFilter(0) // index of the filters array.
 </template>
 ```
 
-> The `value` key is only required when the type is 'select' or 'select-multiple'.
+> The `entries` key is only required when the type is 'select' or 'select-multiple'.
+
+# Server Side Adapter
+
+[Laravel Filterable](https://github.com/albetnov/laravel-filterable) is a simple Server Side Adapter that able to read and process this library generated query string or object automatically.
+
+This includes type casting, queries, and etc.
 
 # API Reference
 
@@ -73,14 +84,8 @@ appendFilter(0) // index of the filters array.
 
   - filters <br />
     An array of `Filter[]` to be rendered.
-  - modelValue <br />
-    Represents the filter's value. It contains `filter.uid` as keys and an object with `opr` and `val` as the value.
-
-- Events
-  - update:modelValue($event) <br />
-    Triggered when a value is being updated. It emits a new object with updated values.
-  - updating(id, val, opr) <br />
-    Triggered when a value is being updated. Unlike the previous event, this one only emits a single updated value rather than an object with updated values.
+  - v-model <br />
+    Represents the filter's value. It contains `array` of `selectedFilter[]` with it's appropriate `value` and `operator`.
 
 ## `useFilters` Composable
 
@@ -97,8 +102,7 @@ appendFilter(0) // index of the filters array.
   - removeFilter(i: number) <br />
     Removes a filter from `state.selectedFilter[]`.
 
-  - removeValue(k: string) <br />
-    Removes filter values from `state.values`.
-
-  - toQueryString(p: string) <br />
-    Returns a URL with the appended query string of `state.values` to the provided parameter `p`.
+  - toQueryString(p?: string) <br />
+    Returns a URL with the appended query string if `p` is filled, of `state.values`.
+  - toQueryObject() <br />
+    Returns a mapped `state.values` that matched the generated query string of `toQueryString`.

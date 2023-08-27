@@ -1,35 +1,23 @@
 <script setup lang="ts">
-import useFilterField from '../../composeables/useFilterField'
-import { toRef } from 'vue'
-import TextOperator from './TextOperator.vue'
+import type { FilterValue } from 'lib/composeables/useFilters'
+import useTextModel from './useTextModel'
+import Operator from '../Operator.vue'
 
 defineOptions({
   inheritAttrs: false
 })
 
 const props = defineProps<{
-  modelValue: {
-    opr: string
-    val: string
-  }
+  modelValue: FilterValue
+  label: string
 }>()
 
-const emits = defineEmits<{
-  'update:modelValue': [val: unknown]
-}>()
-
-const { onOperatorUpdate, onValueUpdate } = useFilterField(emits, toRef(props, 'modelValue'))
+const { operators, value } = useTextModel(props, 'contains')
 </script>
 
 <template>
-  <v-col :cols="2">
-    <TextOperator :model-value="props.modelValue.opr" @update:model-value="onOperatorUpdate" />
-  </v-col>
+  <Operator :items="operators" v-model="value.opr" />
   <v-col>
-    <v-text-field
-      v-bind="$attrs"
-      :model-value="props.modelValue.val"
-      @update:model-value="onValueUpdate"
-    ></v-text-field>
+    <v-text-field :label="props.label" v-model="value.val"></v-text-field>
   </v-col>
 </template>

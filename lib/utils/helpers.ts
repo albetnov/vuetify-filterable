@@ -1,4 +1,4 @@
-export function withEqAndNeq(rest?: unknown[]) {
+export function withEqAndNeq(rest?: { label: string; value: string }[]) {
   const eqAndNeq = [
     {
       label: 'Equal',
