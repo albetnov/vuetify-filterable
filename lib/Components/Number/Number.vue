@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { FilterValue } from '../../composeables/useFilters'
-import useNumberModel from './useNumberModel'
 import Operator from '../Operator.vue'
+import useOperator from '../../composeables/useOperator'
+import { toRef } from 'vue'
 
 defineOptions({
   inheritAttrs: false
@@ -12,7 +13,8 @@ const props = defineProps<{
   label: string
 }>()
 
-const { value, operators } = useNumberModel(props, 'eq')
+const value = toRef(() => props.modelValue)
+const operators = useOperator(value, ['eq', 'neq', 'gt', 'lt', 'gte', 'lte'], 'eq')
 </script>
 
 <template>

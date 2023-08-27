@@ -1,14 +1,20 @@
 <script setup lang="ts">
-import useDateRangeModel from './useDateRangeModel'
+import { toRef } from 'vue'
 import type { FilterValue } from '../../composeables/useFilters'
 import Operator from '../Operator.vue'
+import useDisclosure from '../../composeables/useDisclosure'
+import useOperator from '../../composeables/useOperator'
+import useArrayable from '../../composeables/useArrayable'
 
 const props = defineProps<{
   modelValue: FilterValue
   label: string
 }>()
 
-const { handleOnSave, isMenuOpen, operators, value } = useDateRangeModel(props, 'in')
+const { handleOnSave, isMenuOpen } = useDisclosure()
+const value = toRef(() => props.modelValue)
+const fieldValue = useArrayable(value)
+const operators = useOperator(value, ['in', 'not_in'], 'in')
 </script>
 
 <template>
@@ -17,15 +23,17 @@ const { handleOnSave, isMenuOpen, operators, value } = useDateRangeModel(props, 
     <v-menu :close-on-content-click="false" v-model="isMenuOpen">
       <template #activator="{ props: activatorProps }">
         <v-text-field
-          v-model="value.val"
+          :value="value.val"
+          readonly
           v-bind="activatorProps"
           placeholder="mm/dd/yy"
+          :active="value.val !== null"
           :label="props.label"
         ></v-text-field>
       </template>
       <v-input>
         <v-date-picker
-          v-model="value.val"
+          v-model="fieldValue"
           @click:save="handleOnSave"
           format="keyboardDate"
           multiple

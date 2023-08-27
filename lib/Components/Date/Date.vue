@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import Operator from '../Operator.vue'
-import useDateModel from './useDateModel'
 import type { FilterValue } from '../../composeables/useFilters'
+import useDisclosure from '../../composeables/useDisclosure'
+import useOperator from '../../composeables/useOperator'
+import { toRef } from 'vue'
 
 const props = defineProps<{
   modelValue: FilterValue
   label: string
 }>()
 
-const { value, operators, isMenuOpen, handleOnSave } = useDateModel(props, 'eq')
+const { handleOnSave, isMenuOpen } = useDisclosure()
+const value = toRef(() => props.modelValue)
+const operators = useOperator(value, ['eq', 'neq', 'gt', 'gte', 'lt', 'lte'], 'eq')
 </script>
 
 <template>
@@ -17,7 +21,8 @@ const { value, operators, isMenuOpen, handleOnSave } = useDateModel(props, 'eq')
     <v-menu :close-on-content-click="false" v-model="isMenuOpen">
       <template #activator="{ props: activatorProps }">
         <v-text-field
-          v-model="value.val"
+          :value="value.val"
+          :active="value.val !== null"
           v-bind="activatorProps"
           placeholder="mm/dd/yy"
           :label="props.label"

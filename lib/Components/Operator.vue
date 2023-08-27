@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import type { Operator as OperatorField } from '../utils/Operators'
+
 const props = defineProps<{
-  items: { label: string; value: string }[]
+  items: OperatorField[]
 }>()
 
 defineOptions({
@@ -15,7 +17,7 @@ defineOptions({
       :items="props.items"
       label="Operator"
       item-title="label"
-      item-value="value"
+      item-value="key"
     ></v-select>
   </v-col>
 </template>

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { FilterValue } from 'lib/composeables/useFilters'
-import useTextModel from './useTextModel'
+import type { FilterValue } from '../../composeables/useFilters'
 import Operator from '../Operator.vue'
+import { toRef } from 'vue'
+import useOperator from '../../composeables/useOperator'
 
 defineOptions({
   inheritAttrs: false
@@ -12,7 +13,13 @@ const props = defineProps<{
   label: string
 }>()
 
-const { operators, value } = useTextModel(props, 'contains')
+const value = toRef(() => props.modelValue)
+
+const operators = useOperator(
+  value,
+  ['eq', 'neq', 'contains', 'not_contains', 'starts_with', 'ends_with'],
+  'eq'
+)
 </script>
 
 <template>

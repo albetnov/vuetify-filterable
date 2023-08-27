@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { FilterValue, Entry } from 'lib/composeables/useFilters'
+import type { FilterValue, Entry } from '../../composeables/useFilters'
 import Operator from '../Operator.vue'
-import useSelectSingleModel from './useSelectSingleModel'
+import { toRef } from 'vue'
+import useOperator from '../../composeables/useOperator'
 
 defineOptions({
   inheritAttrs: false
@@ -13,7 +14,8 @@ const props = defineProps<{
   items: Entry[]
 }>()
 
-const { value, operators } = useSelectSingleModel(props, 'eq')
+const value = toRef(() => props.modelValue)
+const operators = useOperator(value, ['eq', 'neq'], 'eq')
 </script>
 
 <template>

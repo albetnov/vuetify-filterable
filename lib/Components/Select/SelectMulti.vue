@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import type { Entry, FilterValue } from 'lib/composeables/useFilters'
+import type { Entry, FilterValue } from '../../composeables/useFilters'
 import Operator from '../Operator.vue'
-import useSelectMultiModel from './useSelectMultiModel'
+import useArrayable from '../../composeables/useArrayable'
+import { toRef } from 'vue'
+import useOperator from '../../composeables/useOperator'
 
 defineOptions({
   inheritAttrs: false
@@ -13,7 +15,9 @@ const props = defineProps<{
   items: Entry[]
 }>()
 
-const { value, operators, fieldValue } = useSelectMultiModel(props, 'in')
+const value = toRef(() => props.modelValue)
+const fieldValue = useArrayable(value)
+const operators = useOperator(value, ['in', 'not_in', 'have_all'], 'in')
 </script>
 
 <template>
