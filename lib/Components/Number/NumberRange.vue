@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FilterValue } from '../../composeables/useFilters'
+import type { ComponentProps } from '../../composeables/useFilters'
 import Operator from '../Operator.vue'
 import { toRef } from 'vue'
 import useOperator from '../../composeables/useOperator'
@@ -8,13 +8,10 @@ defineOptions({
   inheritAttrs: false
 })
 
-const props = defineProps<{
-  modelValue: FilterValue
-  label: string
-}>()
+const props = defineProps<ComponentProps>()
 
 const value = toRef(() => props.modelValue)
-const operators = useOperator(value, ['eq', 'neq', 'gt', 'lt', 'gte', 'lte'], 'eq')
+const operators = useOperator(value, ['eq', 'neq', 'gt', 'lt', 'gte', 'lte'], 'eq', props.operators)
 </script>
 
 <template>

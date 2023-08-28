@@ -1,18 +1,15 @@
 <script setup lang="ts">
 import Operator from '../Operator.vue'
-import type { FilterValue } from '../../composeables/useFilters'
+import type { ComponentProps } from '../../composeables/useFilters'
 import useDisclosure from '../../composeables/useDisclosure'
 import useOperator from '../../composeables/useOperator'
 import { toRef } from 'vue'
 
-const props = defineProps<{
-  modelValue: FilterValue
-  label: string
-}>()
+const props = defineProps<ComponentProps>()
 
 const { handleOnSave, isMenuOpen } = useDisclosure()
 const value = toRef(() => props.modelValue)
-const operators = useOperator(value, ['eq', 'neq', 'gt', 'gte', 'lt', 'lte'], 'eq')
+const operators = useOperator(value, ['eq', 'neq', 'gt', 'gte', 'lt', 'lte'], 'eq', props.operators)
 </script>
 
 <template>

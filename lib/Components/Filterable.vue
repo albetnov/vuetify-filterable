@@ -16,38 +16,34 @@ const props = defineProps<{
 }>()
 
 const state = toRef(() => props.modelValue)
+
+const supportedComponents = {
+  select: SelectSingle,
+  'select-multiple': SelectMulti,
+  string: Text,
+  number: Number,
+  range: NumberRange,
+  date: Date,
+  'date-range': DateRange
+}
 </script>
 
 <template>
-  <template v-for="(filter, key) in props.filters" :key="filter.label">
-    <v-container>
-      <Removeable :index="key" v-if="filter.type === 'select' && filter.entries">
-        <SelectSingle :label="filter.label" v-model="state[key]" :items="filter.entries" />
+  <v-container>
+    <template v-for="(filter, key) in props.filters" :key="filter.label">
+      <Removeable :index="key">
+        <Component
+          :is="supportedComponents[filter.type]"
+          v-bind="{
+            label: filter.label,
+            operators: filter.operators,
+            ...(filter.type === 'select' || filter.type === 'select-multiple'
+              ? { items: filter.entries }
+              : {})
+          }"
+          v-model="state[key]"
+        />
       </Removeable>
-
-      <Removeable :index="key" v-if="filter.type === 'select-multiple' && filter.entries">
-        <SelectMulti :label="filter.label" v-model="state[key]" :items="filter.entries" />
-      </Removeable>
-
-      <Removeable :index="key" v-if="filter.type === 'string'">
-        <Text :label="filter.label" v-model="state[key]" />
-      </Removeable>
-
-      <Removeable :index="key" v-if="filter.type === 'number'">
-        <Number :label="filter.label" v-model="state[key]" />
-      </Removeable>
-
-      <Removeable :index="key" v-if="filter.type === 'range'">
-        <NumberRange :label="filter.label" v-model="state[key]" />
-      </Removeable>
-
-      <Removeable :index="key" v-if="filter.type === 'date'">
-        <Date :label="filter.label" v-model="state[key]" />
-      </Removeable>
-
-      <Removeable :index="key" v-if="filter.type === 'date-range'">
-        <DateRange :label="filter.label" v-model="state[key]" />
-      </Removeable>
-    </v-container>
-  </template>
+    </template>
+  </v-container>
 </template>

@@ -1,20 +1,17 @@
 <script setup lang="ts">
 import { toRef } from 'vue'
-import type { FilterValue } from '../../composeables/useFilters'
+import type { ComponentProps } from '../../composeables/useFilters'
 import Operator from '../Operator.vue'
 import useDisclosure from '../../composeables/useDisclosure'
 import useOperator from '../../composeables/useOperator'
 import useArrayable from '../../composeables/useArrayable'
 
-const props = defineProps<{
-  modelValue: FilterValue
-  label: string
-}>()
+const props = defineProps<ComponentProps>()
 
 const { handleOnSave, isMenuOpen } = useDisclosure()
 const value = toRef(() => props.modelValue)
 const fieldValue = useArrayable(value)
-const operators = useOperator(value, ['in', 'not_in'], 'in')
+const operators = useOperator(value, ['in', 'not_in'], 'in', props.operators)
 </script>
 
 <template>

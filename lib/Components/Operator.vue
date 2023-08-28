@@ -11,7 +11,7 @@ defineOptions({
 </script>
 
 <template>
-  <v-col :sm="2" :xl="1">
+  <v-col :md="2">
     <v-select
       v-bind="$attrs"
       :items="props.items"

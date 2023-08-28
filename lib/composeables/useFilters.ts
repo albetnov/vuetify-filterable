@@ -1,8 +1,9 @@
+import type { AllOperators } from '../utils/Operators'
 import { provide, reactive } from 'vue'
 
 export interface Entry {
   label: string
-  val: string
+  key: string
 }
 
 export interface Filter {
@@ -10,12 +11,19 @@ export interface Filter {
   field: string
   type: 'select' | 'select-multiple' | 'date' | 'date-range' | 'string' | 'number' | 'range'
   entries?: Entry[]
+  operators?: AllOperators[]
 }
 
 export interface FilterValue {
   field: string
   opr: string | null
   val: string | null
+}
+
+export interface ComponentProps {
+  modelValue: FilterValue
+  label: string
+  operators?: AllOperators[]
 }
 
 export type RemoveFilterFn = (index: number) => void

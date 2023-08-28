@@ -1,8 +1,3 @@
-export interface Operator {
-  label: string
-  key: string
-}
-
 const operators = [
   'eq',
   'neq',
@@ -20,6 +15,11 @@ const operators = [
 ] as const
 
 export type AllOperators = (typeof operators)[number]
+
+export interface Operator {
+  label: string
+  key: AllOperators
+}
 
 export type OperatorKeys<T> = Extract<AllOperators, T>
 
