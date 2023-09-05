@@ -9,9 +9,18 @@ export interface Entry {
 export interface Filter {
   label: string
   field: string
-  type: 'select' | 'select-multiple' | 'date' | 'date-range' | 'string' | 'number' | 'range'
+  type:
+    | 'select'
+    | 'select-multiple'
+    | 'date'
+    | 'date-range'
+    | 'string'
+    | 'number'
+    | 'range'
+    | 'boolean'
   entries?: Entry[]
   operators?: AllOperators[]
+  itemLabels?: [string, string] | 'confirmation'
 }
 
 export interface FilterValue {
@@ -27,7 +36,6 @@ export interface ComponentProps {
 }
 
 export type RemoveFilterFn = (index: number) => void
-export type RemoveValueFn = (id: string) => void
 
 export const REMOVE_FILTER = Symbol('removeFilter')
 
@@ -59,14 +67,17 @@ export default function useFilters(filters: Filter[]) {
   const toQueryString = (path?: string) => {
     const query = new URLSearchParams()
 
-    for (const [index, filter] of Object.entries(state.values)) {
-      // if the value|operator is empty, it's mean the filter is not yet initialized or used, that's said we can just skip it.
-      if (!filter.val || !filter.opr) continue
+    state.values.forEach((filter, index) => {
+      // check if operator is initialized or not
+      if (!filter.opr) return
+
+      // if the value is empty, then just skip it
+      if (typeof filter.val === 'undefined' || filter.val === null) return
 
       query.append(`filters[${index}][field]`, filter.field)
       query.append(`filters[${index}][operator]`, filter.opr)
       query.append(`filters[${index}][value]`, filter.val)
-    }
+    })
 
     if (path) {
       if (path[path.length - 1] != '/') {
@@ -85,8 +96,11 @@ export default function useFilters(filters: Filter[]) {
     }
 
     for (const filter of state.values) {
-      // if the value|operator is empty, it's mean the filter is not yet initialized or used, that's said we can just skip it.
-      if (!filter.val || !filter.opr) continue
+      // check if operator is initialized or not
+      if (!filter.opr) return
+
+      // if the value is empty, then just skip it
+      if (typeof filter.val === 'undefined' || filter.val === null) return
 
       result.filters.push({
         field: filter.field,

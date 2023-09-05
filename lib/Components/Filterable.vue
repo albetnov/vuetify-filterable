@@ -9,6 +9,7 @@ import Number from './Number/Number.vue'
 import NumberRange from './Number/NumberRange.vue'
 import Date from './Date/Date.vue'
 import DateRange from './Date/DateRange.vue'
+import Boolean from './Boolean/Index.vue'
 
 const props = defineProps<{
   filters: Filter[]
@@ -24,7 +25,8 @@ const supportedComponents = {
   number: Number,
   range: NumberRange,
   date: Date,
-  'date-range': DateRange
+  'date-range': DateRange,
+  boolean: Boolean
 }
 </script>
 
@@ -39,7 +41,8 @@ const supportedComponents = {
             operators: filter.operators,
             ...(filter.type === 'select' || filter.type === 'select-multiple'
               ? { items: filter.entries }
-              : {})
+              : {}),
+              ...(filter.type === 'boolean' ? { itemLabels: filter.itemLabels } : {})
           }"
           v-model="state[key]"
         />
