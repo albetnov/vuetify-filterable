@@ -10,7 +10,8 @@ export default defineConfig({
     lib: {
       entry: {
         'vuetify-filterable': resolve(__dirname, 'lib/vuetify-filterable.ts'),
-        'composeables/useFilters': resolve(__dirname, 'lib/composeables/useFilters.ts')
+        'composeables/useFilters': resolve(__dirname, 'lib/composeables/useFilters.ts'),
+        'factories/Builder': resolve(__dirname, 'lib/factories/Builder.ts'),
       },
       name: 'vuetify-filterable',
       formats: ['es']

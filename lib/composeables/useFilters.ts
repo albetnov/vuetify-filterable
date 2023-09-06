@@ -1,3 +1,4 @@
+import type Builder from '../factories/Builder'
 import type { AllOperators } from '../utils/Operators'
 import { provide, reactive } from 'vue'
 
@@ -39,20 +40,20 @@ export type RemoveFilterFn = (index: number) => void
 
 export const REMOVE_FILTER = Symbol('removeFilter')
 
-export default function useFilters(filters: Filter[]) {
+export default function useFilters(filters: Builder) {
   const state = reactive<{
     selectedFilter: Filter[]
     filters: Filter[]
     values: FilterValue[]
   }>({
     selectedFilter: [],
-    filters: filters,
+    filters: filters.get(),
     values: []
   })
 
   const appendFilter = (index: number) => {
-    state.selectedFilter.push(filters[index])
-    state.values.push({ field: filters[index].field, opr: '', val: null })
+    state.selectedFilter.push(filters.get()[index])
+    state.values.push({ field: filters.get()[index].field, opr: '', val: null })
     state.filters.splice(index, 1)
   }
 

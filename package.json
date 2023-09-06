@@ -31,6 +31,9 @@
     "./composeables/useFilters": {
       "import": "./dist/composeables/useFilters.js"
     },
+    "./factories/Builder": {
+      "import": "./dist/factories/Builder.js"
+    },
     "./dist/style.css": "./dist/style.css"
   },
   "scripts": {
