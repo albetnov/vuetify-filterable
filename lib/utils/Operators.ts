@@ -21,8 +21,6 @@ export interface Operator {
   key: AllOperators
 }
 
-export type OperatorKeys<T> = Extract<AllOperators, T>
-
 export class Operators {
   private labels = {
     eq: 'Equal',
