@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import type { Operator as OperatorField } from '../utils/Operators'
+import { Operators, type AllOperators } from '../utils/Operators'
 
 const props = defineProps<{
-  items: OperatorField[]
+  items: AllOperators[]
 }>()
+
+const operators = new Operators().pick(props.items)
 
 defineOptions({
   inheritAttrs: false
@@ -14,7 +16,7 @@ defineOptions({
   <v-col :md="2">
     <v-select
       v-bind="$attrs"
-      :items="props.items"
+      :items="operators"
       label="Operator"
       item-title="label"
       item-value="key"

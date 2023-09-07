@@ -1,6 +1,6 @@
 import { onMounted, type Ref } from 'vue'
 import type { FilterValue } from './useFilters'
-import { Operators, type AllOperators } from '../utils/Operators'
+import { type AllOperators } from '../utils/Operators'
 
 export default function useOperator<T extends AllOperators[]>(
   value: Ref<FilterValue>,
@@ -12,9 +12,9 @@ export default function useOperator<T extends AllOperators[]>(
     value.value.opr = defaultOperator
   })
 
-  const operators = new Operators()
-    .pick(supportedOperators)
-    .filter((opr) => (allowedOperator ? allowedOperator.includes(opr.key) ?? false : true))
+  const operators = allowedOperator
+    ? supportedOperators.filter((item) => allowedOperator.includes(item))
+    : supportedOperators
 
   return operators
 }
