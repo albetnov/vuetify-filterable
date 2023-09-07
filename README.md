@@ -4,12 +4,12 @@ Vuetify Filterable is a package that renders rich and flexible filters for your 
 
 > It's simply a view component.
 
-# Quick Usage
+# Installation
 
-First, install it:
+Install the package from npmjs:
 
 ```bash
-pnpm i vuetify-filterable
+npm i vuetify-filterable
 ```
 
 Then, plug it in (Basic Installation Example):
@@ -36,14 +36,26 @@ const vuetify = createVuetify({
 createApp(App).use(vuetify).use(VuetifyFilterable).mount('#app')
 ```
 
-Call it on your template:
+When implementing this, both `v-filterable` and `v-filterable-operator` will be injected. If you wish to modify their prefixes, you can easily do so by passing an `alias`:
+
+```typescript
+use(VuetifyFilterable, {
+  alias: 'filters'
+})
+```
+
+The above action will substitute the components with `filters` and `filters-operator`.
+
+# Quick Usage
+
+To utilize the library, you need to import `useFilters` and use it to supply the necessary props for rendering `v-filterable`. An example is provided below:
 
 ```vue
 <script setup lang="ts">
 import useFilters, { type Filter } from 'vuetify-filterable/composeables/useFilters'
 import { onMounted } from 'vue'
 
-// use Filter[] types to unlock auto complete
+// use Filter[] types to have auto complete
 const filters: Filter[] = [
     {
         label: "Roles",
@@ -68,87 +80,47 @@ onMounted(() => {
 </template>
 ```
 
-> The `entries` key is only required when the type is 'select' or 'select-multiple'.
+## Using Builder
 
-# The `Filter`
-
-- `type` <br />
-  There are multiple types that `filter` support. These are:
-  - `select` (requires extra field: `entries`)
-  - `select-multiple` (requires extra field: `entries`)
-  - `date`
-  - `date-range`
-  - `string`
-  - `number`
-  - `range` (a number but range slider)
-  - `boolean` (same to `select` but limited to yes and no, requires extra field: `itemLabels`)
-- `field` <br />
-  The `field` key used to give `meta` information to the backend for which column to filter. This key receive `string`.
-- `label` <br />
-  placeholder text for the filter component. This key receive `string`.
-- `entries` <br />
-  This key used to define the data for `select` or `select-multiple` type. This key receive object with `label` and `key` pair.
-- `itemLabels` <br />
-  Like `entries` but for `boolean` type instead. This key received tuple of two strings or `confirmation`.
-
-## Using `select` or `select-multiple`
-
-To use `select` or `select-multiple` you have to define the entries at the data state.
+If the syntax mentioned above causes confusion regarding when to use `entries` and other keys, Vuetify Filterable also offers a Builder Factory that can effortlessly resolve this issue. Let's see it in action:
 
 ```typescript
 import useFilters from 'vuetify-filterable/composeables/useFilters'
+import Builder from 'vuetify-filterable/factories/Builder'
 
-useFilters([
-  {
-    field: 'membership',
-    label: 'Membership',
-    type: 'select-multiple',
-    // required if type === 'select' or type === 'select-multiple'
-    entries: [
-      { label: 'Silver', key: 'silver' },
-      { label: 'Gold', key: 'gold' }
-    ]
-  }
-])
+const filters = new Builder()
+  .text('name', 'Filter By Name', {
+    allowedOperators: ['starts_with', 'ends_with']
+  })
+  .get()
+
+useFilters(filters) // this also possible
 ```
 
-> The same also applies to `select`
+### Builder API Reference
 
-## Using `boolean`
+[Builder API Reference](https://github.com/albetnov/vuetify-filterable/wiki/Builder-API-Reference)
 
-To use `boolean` type you have to define the items placeholder for both `true` and `false`:
+## Using Object
+
+You can also use object to be passed to `useFilters` like the following example:
 
 ```typescript
-import useFilters from 'vuetify-filterable/composeables/useFilters'
-
-useFilters([
+const filters = [
   {
-    field: 'is_active',
-    label: 'Is Active?',
-    type: 'boolean',
-    // required if type === 'boolean'
-    itemLabels: ['Active', 'Not Active']
+    field: 'name',
+    label: 'Filter By Name',
+    type: 'text',
+    operators: ['starts_with', 'ends_with']
   }
-])
+]
+
+useFilters(filters)
 ```
 
-> Note: the first index refer to `true` while the second index refer to `false`.
+### Filter API Reference
 
-You can also use a template labels like `['Yes', 'No']` by putting `confirmation` to `itemLabels`:
-
-```typescript
-import useFilters from 'vuetify-filterable/composeables/useFilters'
-
-useFilters([
-  {
-    field: 'is_active',
-    label: 'Is Active?',
-    type: 'boolean',
-    // required if type === 'boolean'
-    itemLabels: 'confirmation' // alias to ['Yes', 'No']
-  }
-])
-```
+[Filter API Reference](https://github.com/albetnov/vuetify-filterable/wiki/Filter-API-Reference)
 
 # Server Side Adapter
 
@@ -156,33 +128,10 @@ useFilters([
 
 This includes type casting, queries, and etc.
 
-# API Reference
+# API References
 
-## `v-filterable` Component
-
-- Props
-
-  - filters <br />
-    An array of `Filter[]` to be rendered.
-  - v-model <br />
-    Represents the filter's value. It contains `array` of `selectedFilter[]` with it's appropriate `value` and `operator`.
-
-## `useFilters` Composable
-
-- Props
-
-  - filters <br />
-    An array of `Filter[]` to be managed.
-
-- Return Value
-
-  - appendFilter(i: number) <br />
-    Adds a new filter to `state.selectedFilter[]`.
-
-  - removeFilter(i: number) <br />
-    Removes a filter from `state.selectedFilter[]`.
-
-  - toQueryString(p?: string) <br />
-    Returns a URL with the appended query string if `p` is filled, of `state.values`.
-  - toQueryObject() <br />
-    Returns a mapped `state.values` that matched the generated query string of `toQueryString`.
+- [`v-filterable`](https://github.com/albetnov/vuetify-filterable/wiki/V%E2%80%90Filterable-Component-API)
+- [`v-filterable-operator`](https://github.com/albetnov/vuetify-filterable/wiki/V%E2%80%90Filterable%E2%80%90Operator-Componet-API)
+- [`useFilters`](https://github.com/albetnov/vuetify-filterable/wiki/useFilters-API)
+- [`Builder`](https://github.com/albetnov/vuetify-filterable/wiki/Builder-API-Reference)
+- [`Filter Interface`](https://github.com/albetnov/vuetify-filterable/wiki/Filter-API-Reference)
