@@ -12,6 +12,7 @@ export default defineConfig({
         'vuetify-filterable': resolve(__dirname, 'lib/vuetify-filterable.ts'),
         'composeables/useFilters': resolve(__dirname, 'lib/composeables/useFilters.ts'),
         'factories/Builder': resolve(__dirname, 'lib/factories/Builder.ts'),
+        'Components/Operator': resolve(__dirname, 'lib/Components/Operator.vue'),
       },
       name: 'vuetify-filterable',
       formats: ['es']

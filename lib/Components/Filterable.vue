@@ -34,7 +34,20 @@ const supportedComponents = {
   <v-container>
     <template v-for="(filter, key) in props.filters" :key="filter.label">
       <Removeable :index="key">
+        <slot
+          v-if="filter.type === 'custom'"
+          :name="`custom.${filter?.customId}`"
+          :operator="{
+            events: { 'update:model-value': ($event: string) => (state[key].opr = $event) },
+            bindings: { value: state[key].opr }
+          }"
+          :value="{
+            events: { 'update:model-value': ($event: string) => (state[key].val = $event) },
+            bindings: { value: state[key].val }
+          }"
+        ></slot>
         <Component
+          v-else
           :is="supportedComponents[filter.type]"
           v-bind="{
             label: filter.label,
@@ -42,7 +55,7 @@ const supportedComponents = {
             ...(filter.type === 'select' || filter.type === 'select-multiple'
               ? { items: filter.entries }
               : {}),
-              ...(filter.type === 'boolean' ? { itemLabels: filter.itemLabels } : {})
+            ...(filter.type === 'boolean' ? { itemLabels: filter.itemLabels } : {})
           }"
           v-model="state[key]"
         />

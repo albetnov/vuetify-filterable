@@ -1,4 +1,3 @@
-import type Builder from '../factories/Builder'
 import type { AllOperators } from '../utils/Operators'
 import { provide, reactive } from 'vue'
 
@@ -19,6 +18,8 @@ export interface Filter {
     | 'number'
     | 'range'
     | 'boolean'
+    | 'custom'
+    customId?: string
   entries?: Entry[]
   operators?: AllOperators[]
   itemLabels?: [string, string] | 'confirmation'
@@ -40,20 +41,20 @@ export type RemoveFilterFn = (index: number) => void
 
 export const REMOVE_FILTER = Symbol('removeFilter')
 
-export default function useFilters(filters: Builder) {
+export default function useFilters(filters: Filter[]) {
   const state = reactive<{
     selectedFilter: Filter[]
     filters: Filter[]
     values: FilterValue[]
   }>({
     selectedFilter: [],
-    filters: filters.get(),
+    filters: filters,
     values: []
   })
 
   const appendFilter = (index: number) => {
-    state.selectedFilter.push(filters.get()[index])
-    state.values.push({ field: filters.get()[index].field, opr: '', val: null })
+    state.selectedFilter.push(filters[index])
+    state.values.push({ field: filters[index].field, opr: '', val: null })
     state.filters.splice(index, 1)
   }
 
@@ -98,10 +99,10 @@ export default function useFilters(filters: Builder) {
 
     for (const filter of state.values) {
       // check if operator is initialized or not
-      if (!filter.opr) return
+      if (!filter.opr) continue
 
       // if the value is empty, then just skip it
-      if (typeof filter.val === 'undefined' || filter.val === null) return
+      if (typeof filter.val === 'undefined' || filter.val === null) continue
 
       result.filters.push({
         field: filter.field,
