@@ -19,7 +19,7 @@ export interface Filter {
     | 'range'
     | 'boolean'
     | 'custom'
-    customId?: string
+  customId?: string
   entries?: Entry[]
   operators?: AllOperators[]
   itemLabels?: [string, string] | 'confirmation'

@@ -45,6 +45,7 @@ const supportedComponents = {
             events: { 'update:model-value': ($event: string) => (state[key].val = $event) },
             bindings: { value: state[key].val }
           }"
+          :label="filter.label"
         ></slot>
         <Component
           v-else

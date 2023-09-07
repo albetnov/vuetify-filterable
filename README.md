@@ -122,6 +122,45 @@ useFilters(filters)
 
 [Filter API Reference](https://github.com/albetnov/vuetify-filterable/wiki/Filter-API-Reference)
 
+# Extend it!
+
+Vuetify Filterable supports custom types. Just use `custom` for builder or `type:'custom'` for object (note: you will require to fill `customId` property too).
+
+- Builder Example
+
+```typescript
+new Builder().custom('flight_no', 'Flight No', 'someId').get()
+```
+
+- Object Example
+
+```typescript
+{
+  type: "custom",
+  field: "flight_no",
+  label: "Flight No",
+  customId: "someId"
+}
+```
+
+After that, you can use named slot with prefix of `custom.${string:customId}` to register your own view:
+
+```vue
+<template #[`custom.flight_no`]="{ operator, value, label }">
+  <!-- Vuetify Filterable Operator -->
+  <v-filterable-operator
+    v-bind="operator.bindings"
+    v-on="operator.events"
+    :items="['starts_with', 'eq']"
+  ></v-filterable-operator>
+  <!-- To align with the view, you should wrap your component using v-col. -->
+  <v-col>
+    <!-- Your component, should registered both event and bind, there's also a label -->
+    <v-text-field :label="label" v-bind="value.bindings" v-on="value.events"></v-text-field>
+  </v-col>
+</template>
+```
+
 # Server Side Adapter
 
 [Laravel Filterable](https://github.com/albetnov/laravel-filterable) is a simple Server Side Adapter that able to read and process this library generated query string or object automatically.
