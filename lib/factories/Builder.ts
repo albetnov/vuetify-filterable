@@ -12,14 +12,14 @@ export default class Builder {
     label: string,
     props?: {
       allowedOperators?: EqNeq[]
-      itemLabels?: [string, string]
+      labels?: [string, string]
     }
   ) {
     this.filters.push({
       field,
       label,
       type: 'boolean',
-      itemLabels: props?.itemLabels ?? 'confirmation',
+      itemLabels: props?.labels ?? 'confirmation',
       operators: props?.allowedOperators
     })
 
