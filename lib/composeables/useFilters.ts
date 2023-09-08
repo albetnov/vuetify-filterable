@@ -77,8 +77,8 @@ export default function useFilters(filters: Filter[]) {
       if (typeof filter.val === 'undefined' || filter.val === null) return
 
       query.append(`filters[${index}][field]`, filter.field)
-      query.append(`filters[${index}][operator]`, filter.opr)
-      query.append(`filters[${index}][value]`, filter.val)
+      query.append(`filters[${index}][opr]`, filter.opr)
+      query.append(`filters[${index}][val]`, filter.val)
     })
 
     if (path) {
@@ -93,7 +93,7 @@ export default function useFilters(filters: Filter[]) {
   }
 
   const toQueryObject = () => {
-    const result: { filters: { field: string; operator: string; value: string }[] } = {
+    const result: { filters: FilterValue[] } = {
       filters: []
     }
 
@@ -106,8 +106,8 @@ export default function useFilters(filters: Filter[]) {
 
       result.filters.push({
         field: filter.field,
-        operator: filter.opr,
-        value: filter.val
+        opr: filter.opr,
+        val: filter.val
       })
     }
 
