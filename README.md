@@ -161,11 +161,29 @@ After that, you can use named slot with prefix of `custom.${string:customId}` to
 </template>
 ```
 
+# Using `toQueryString` or `toQueryObject`
+
+The `useFilters` composeable supports to convert the current filter state to the query `string` or `object`.
+
+Usage Example:
+
+```typescript
+import useFilters from 'vuetify-filterable/composeables/useFilters'
+
+const { toQueryString, toQueryObject } = useFilters(filters)
+
+toQueryString('http://localhost:3000') // generates http://localhost:3000?filters[0][field]=flight_no&filters[0][opr]=eq&filters[0][val]=1010
+
+toQueryObject() // generates {filters:[{field: "flight_no", opr: "eq", val: 1010}]}
+```
+
 # Server Side Adapter
 
 [Laravel Filterable](https://github.com/albetnov/laravel-filterable) is a simple Server Side Adapter that able to read and process this library generated query string or object automatically.
 
 This includes type casting, queries, and etc.
+
+> The adapter fully supports `toQueryString`.
 
 # API References
 
