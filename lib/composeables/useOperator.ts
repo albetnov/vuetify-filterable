@@ -9,6 +9,7 @@ export default function useOperator<T extends AllOperators[]>(
   allowedOperator?: AllOperators[]
 ) {
   onMounted(() => {
+    if (value.value.opr !== '') return
     value.value.opr = defaultOperator
   })
 

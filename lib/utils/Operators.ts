@@ -44,4 +44,11 @@ export class Operators {
       key: item
     }))
   }
+
+  match(key: AllOperators) {
+    return {
+      label: this.labels[key],
+      key
+    }
+  }
 }
