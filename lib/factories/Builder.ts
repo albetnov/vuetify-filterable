@@ -1,8 +1,14 @@
-import type { Entry, Filter } from '../composeables/useFilters'
+import type { AllOperators } from 'lib/utils/Operators'
+import type { DefaultValue, Entry, Filter } from '../composeables/useFilters'
 
 type EqNeq = 'eq' | 'neq'
 type EqNeqGtLt = EqNeq | 'gt' | 'gte' | 'lt' | 'lte'
 type InNotIn = 'in' | 'not_in'
+
+interface BuilderProps<T extends AllOperators> {
+  allowedOperators?: T[]
+  defaultValue?: DefaultValue<T>
+}
 
 export default class Builder {
   private filters: Filter[] = []
@@ -10,8 +16,7 @@ export default class Builder {
   confirmation(
     field: string,
     label: string,
-    props?: {
-      allowedOperators?: EqNeq[]
+    props?: BuilderProps<EqNeq> & {
       labels?: [string, string]
     }
   ) {
@@ -20,7 +25,8 @@ export default class Builder {
       label,
       type: 'boolean',
       itemLabels: props?.labels ?? 'confirmation',
-      operators: props?.allowedOperators
+      operators: props?.allowedOperators,
+      defaultValue: props?.defaultValue
     })
 
     return this
@@ -29,8 +35,7 @@ export default class Builder {
   date<T extends boolean>(
     field: string,
     label: string,
-    props?: {
-      allowedOperators?: (T extends true ? InNotIn : EqNeqGtLt)[]
+    props?: BuilderProps<T extends true ? InNotIn : EqNeqGtLt> & {
       isRange?: T
     }
   ) {
@@ -38,7 +43,8 @@ export default class Builder {
       field,
       label,
       type: props?.isRange ? 'date-range' : 'date',
-      operators: props?.allowedOperators
+      operators: props?.allowedOperators,
+      defaultValue: props?.defaultValue
     })
 
     return this
@@ -48,8 +54,7 @@ export default class Builder {
     field: string,
     label: string,
     items: Entry[],
-    props?: {
-      allowedOperators?: (T extends true ? InNotIn | 'have_all' : EqNeq)[]
+    props?: BuilderProps<T extends true ? InNotIn | 'have_all' : EqNeq> & {
       isMultiple?: T
     }
   ) {
@@ -58,7 +63,8 @@ export default class Builder {
       label,
       type: props?.isMultiple ? 'select-multiple' : 'select',
       entries: items,
-      operators: props?.allowedOperators
+      operators: props?.allowedOperators,
+      defaultValue: props?.defaultValue
     })
 
     return this
@@ -67,10 +73,9 @@ export default class Builder {
   text<T extends boolean>(
     field: string,
     label: string,
-    props?: {
-      allowedOperators?: (T extends true
-        ? EqNeq | 'contains' | 'not_contains' | 'starts_with' | 'ends_with'
-        : EqNeqGtLt)[]
+    props?: BuilderProps<
+      T extends true ? EqNeq | 'contains' | 'not_contains' | 'starts_with' | 'ends_with' : EqNeqGtLt
+    > & {
       numberOnly?: T
     }
   ) {
@@ -78,18 +83,20 @@ export default class Builder {
       field,
       label,
       type: props?.numberOnly ? 'number' : 'string',
-      operators: props?.allowedOperators
+      operators: props?.allowedOperators,
+      defaultValue: props?.defaultValue
     })
 
     return this
   }
 
-  range(field: string, label: string, props?: { allowedOperators?: EqNeqGtLt[] }) {
+  range(field: string, label: string, props?: BuilderProps<EqNeqGtLt>) {
     this.filters.push({
       type: 'range',
       field,
       label,
-      operators: props?.allowedOperators
+      operators: props?.allowedOperators,
+      defaultValue: props?.defaultValue
     })
 
     return this
