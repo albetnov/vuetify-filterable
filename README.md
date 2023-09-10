@@ -118,6 +118,8 @@ const filters = [
 useFilters(filters)
 ```
 
+> Note: It is highly recommended to use the `Builder` as it provides an abstraction for constructing `objects` with improved readability and enhanced IntelliSense support
+
 ### Filter API Reference
 
 [Filter API Reference](https://github.com/albetnov/vuetify-filterable/wiki/Filter-API-Reference)
