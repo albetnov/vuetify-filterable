@@ -6,33 +6,35 @@ export interface Entry {
   key: string
 }
 
+export interface DefaultValue<T extends AllOperators> {
+  opr: T
+  val: unknown
+}
+
 export interface Filter {
   label: string
   field: string
   type:
-  | 'select'
-  | 'select-multiple'
-  | 'date'
-  | 'date-range'
-  | 'string'
-  | 'number'
-  | 'range'
-  | 'boolean'
-  | 'custom'
+    | 'select'
+    | 'select-multiple'
+    | 'date'
+    | 'date-range'
+    | 'string'
+    | 'number'
+    | 'range'
+    | 'boolean'
+    | 'custom'
   customId?: string
   entries?: Entry[]
   operators?: AllOperators[]
   itemLabels?: [string, string] | 'confirmation'
-  defaultValue?: {
-    opr: string
-    val: string
-  }
+  defaultValue?: DefaultValue<AllOperators>
 }
 
 export interface FilterValue {
   field: string
   opr: string | null
-  val: string | null
+  val: unknown | null
 }
 
 export interface ComponentProps {
@@ -46,7 +48,7 @@ export type RemoveFilterFn = (index: number) => void
 export const REMOVE_FILTER = Symbol('removeFilter')
 
 export default function useFilters(filters: Filter[]) {
-  const filtersWithDefault = filters.filter(item => item.defaultValue)
+  const filtersWithDefault = filters.filter((item) => item.defaultValue)
 
   const state = reactive<{
     selectedFilter: Filter[]
@@ -54,13 +56,17 @@ export default function useFilters(filters: Filter[]) {
     values: FilterValue[]
   }>({
     selectedFilter: filtersWithDefault,
-    filters: filters.filter(item => !item.defaultValue),
-    values: filtersWithDefault.map(item => ({ field: item.field, opr: item.defaultValue.opr, val: item.defaultValue.val }))
+    filters: filters.filter((item) => !item.defaultValue),
+    values: filtersWithDefault.map((item) => ({
+      field: item.field,
+      opr: item.defaultValue!.opr,
+      val: item.defaultValue!.val
+    }))
   })
 
   const appendFilter = (index: number) => {
-    state.selectedFilter.push(filters[index])
-    state.values.push({ field: filters[index].field, opr: '', val: null })
+    state.selectedFilter.push(state.filters[index])
+    state.values.push({ field: state.filters[index].field, opr: '', val: null })
     state.filters.splice(index, 1)
   }
 
@@ -84,7 +90,7 @@ export default function useFilters(filters: Filter[]) {
 
       query.append(`filters[${index}][field]`, filter.field)
       query.append(`filters[${index}][opr]`, filter.opr)
-      query.append(`filters[${index}][val]`, filter.val)
+      query.append(`filters[${index}][val]`, filter.val.toString())
     })
 
     if (path) {
